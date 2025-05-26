@@ -1,10 +1,11 @@
 'use client';
 
-import { Input, Radio, RadioChangeEvent, Table } from 'antd';
+import { Input, message, Radio, RadioChangeEvent, Table } from 'antd';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import cn from './StockTable.module.scss';
 import { ColumnsType } from 'antd/es/table';
 import { CheckboxGroupProps } from 'antd/es/checkbox';
+import axios from 'axios';
 type Stock = {
   symbol: string;
   name: string;
@@ -74,22 +75,45 @@ const StockTable: FC<StockTableProps> = ({ onSelectSymbol }) => {
     },
   ];
   const fetchStocks = useCallback(async () => {
-    const data = await Promise.all(
-      symbols.map(async (symbol) => {
-        const res = await fetch(`/api/stock-data?symbol=${symbol}`);
-        const json = await res.json();
-        return {
-          key: symbol,
-          symbol,
-          name: json.name || '',
-          price: parseFloat(json.price) || 0,
-          percent_change: parseFloat(json.percent_change?.replace('%', '')) || 0,
-          open: parseFloat(json.open) || 0,
-        };
-      }),
-    );
-    setStocks(data);
-    setLoading(false);
+    setLoading(true);
+    try {
+      const data = await Promise.all(
+        symbols.map(async (symbol) => {
+          try {
+            const res = await axios.get(`/api/stock-data?symbol=${symbol}`);
+            const json = res.data;
+
+            return {
+              key: symbol,
+              symbol,
+              name: json.name || '',
+              price: parseFloat(json.price) || 0,
+              percent_change: parseFloat(json.percent_change?.replace('%', '')) || 0,
+              open: parseFloat(json.open) || 0,
+            };
+          } catch (error) {
+            console.error(`Error fetching data for ${symbol}:`, error);
+            message.warning(`Не удалось загрузить данные для ${symbol}`);
+            return {
+              key: symbol,
+              symbol,
+              name: '',
+              price: 0,
+              percent_change: 0,
+              open: 0,
+            };
+          }
+        }),
+      );
+
+      setStocks(data);
+    } catch (error) {
+      console.error('General fetching error:', error);
+      message.error('Произошла ошибка при загрузке данных');
+      setStocks([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
