@@ -1,0 +1,24 @@
+.container {
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 8px;
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .green {
+    color: #389e0d;
+  }
+
+  .red {
+    color: #ff4d4f;
+  }
+}
+
+.row {
+  cursor: pointer;
+}
