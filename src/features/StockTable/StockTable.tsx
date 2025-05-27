@@ -82,14 +82,13 @@ const StockTable: FC<StockTableProps> = ({ onSelectSymbol }) => {
           try {
             const res = await axios.get(`/api/stock-data?symbol=${symbol}`);
             const json = res.data;
-
             return {
               key: symbol,
               symbol,
-              name: json.name || '',
-              price: parseFloat(json.price) || 0,
-              percent_change: parseFloat(json.percent_change?.replace('%', '')) || 0,
-              open: parseFloat(json.open) || 0,
+              name: json.name,
+              price: json.price,
+              percent_change: json.percent_change,
+              open: json.open,
             };
           } catch (error) {
             console.error(`Error fetching data for ${symbol}:`, error);
@@ -105,7 +104,6 @@ const StockTable: FC<StockTableProps> = ({ onSelectSymbol }) => {
           }
         }),
       );
-
       setStocks(data);
     } catch (error) {
       console.error('General fetching error:', error);

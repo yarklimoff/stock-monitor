@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { useEffect, useState } from 'react';
 import cn from './StockChart.module.scss';
+import axios from 'axios';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 type TimeSeriesData = {
@@ -58,9 +59,9 @@ export default function StockChart({ symbol }: StockChartProps) {
 
     const fetchChartData = async () => {
       try {
-        const res = await fetch(`/api/stock-data-timeline?symbol=${symbol}`);
+        const res = await axios.get(`/api/stock-data-timeline?symbol=${symbol}`);
 
-        const json = await res.json();
+        const json = res.data;
 
         if (!json.values) return;
 

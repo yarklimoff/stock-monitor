@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Error from 'next/error';
 import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
